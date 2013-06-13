@@ -6,6 +6,7 @@ class Obstacle {
   float dist;
   int colorDist;
   int radius = diameter/2;
+  boolean isHit = false;
 
   Obstacle (float _x, float _y) {
     x = _x;
@@ -32,13 +33,20 @@ class Obstacle {
 
   // check for collision with player
   void testCollision() {
-    if (dist < radius) collision(this);
+    // if we're close enough for a collision and NOT already playing the sound, do so
+    if (dist < radius + player.radius && !hitSound.isPlaying()) {
+      collision(x);  // pass x position for panning L/R
+      isHit = true;
+    }
+    else {
+      isHit = false;
+    }
   }
 
   // draw onscreen
   void display() {
     noStroke();
-    fill(map(dist, 0, player.visionDist, 255, 0), map(dist, 0, player.visionDist, 150, 0), 0);
+    fill(255,150,0, map(dist, 0, player.visionDist, 255, 0));    // vary transparency with distance
     ellipse(x, y, diameter, diameter);
   }
 
@@ -47,7 +55,6 @@ class Obstacle {
     return int(degrees(angleCenter));
   }
 }
-
 
 // orders clockwise (for sonar beeps!)
 void updateObstacleOrder() {
